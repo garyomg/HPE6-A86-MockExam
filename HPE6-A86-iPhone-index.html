@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>HPE6-A86 官方規格模擬考 (含錯題詳細原因解析)</title>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <style>
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; touch-action: manipulation; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0B1120; color: #F1F5F9; min-height: 100vh; display: flex; flex-direction: column; }
+    header { background: #0F172A; border-bottom: 1px solid #1E293B; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 50; }
+    .brand { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+    .logo { background: #FF8300; color: #FFF; font-weight: bold; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+    .title-box h1 { font-size: 14px; font-weight: bold; color: #FFF; display: flex; align-items: center; gap: 6px; }
+    .badge { font-size: 10px; background: rgba(255, 131, 0, 0.2); color: #FF8300; border: 1px solid rgba(255, 131, 0, 0.3); padding: 2px 6px; border-radius: 4px; font-weight: bold; }
+    .title-box p { font-size: 10px; color: #94A3B8; }
+    main { flex: 1; max-width: 680px; width: 100%; margin: 0 auto; padding: 16px; }
+    .card { background: #0F172A; border: 1px solid #1E293B; border-radius: 20px; padding: 20px; margin-bottom: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+    .spec-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 16px 0; text-align: center; }
+    .spec-box { background: #020617; border: 1px solid #1E293B; border-radius: 14px; padding: 12px 6px; }
+    .spec-label { display: block; font-size: 10px; color: #94A3B8; font-weight: bold; text-transform: uppercase; margin-bottom: 4px; }
+    .spec-val { font-size: 18px; font-weight: 900; }
+    .btn-start { width: 100%; background: linear-gradient(135deg, #FF8300, #E57600); color: #FFF; border: none; padding: 14px; border-radius: 14px; font-size: 15px; font-weight: bold; cursor: pointer; }
+    .btn-save { width: 100%; background: #1E293B; color: #F1F5F9; border: 1px solid #334155; padding: 12px; border-radius: 14px; font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 8px; }
+    .hidden { display: none !important; }
+    .quiz-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 12px; color: #94A3B8; }
+    .timer { font-family: monospace; font-size: 14px; font-weight: bold; color: #F1F5F9; background: #1E293B; padding: 4px 8px; border-radius: 6px; }
+    .q-text { font-size: 15px; line-height: 1.6; margin-bottom: 16px; color: #F8FAFC; white-space: pre-line; }
+    .code-box { background: #020617; border: 1px solid #1E293B; border-radius: 12px; padding: 12px; font-family: monospace; font-size: 12px; color: #10B981; white-space: pre; overflow-x: auto; margin-bottom: 14px; }
+    .option-item { background: #020617; border: 1px solid #1E293B; border-radius: 14px; padding: 12px 14px; margin-bottom: 10px; display: flex; gap: 12px; align-items: flex-start; cursor: pointer; }
+    .option-item.selected { border-color: #FF8300; background: rgba(255, 131, 0, 0.15); color: #FFF; }
+    .opt-circle { width: 24px; height: 24px; border-radius: 50%; border: 1px solid #475569; background: #0F172A; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; flex-shrink: 0; margin-top: 2px; }
+    .option-item.selected .opt-circle { background: #FF8300; border-color: #FF8300; color: #FFF; }
+    .opt-text { font-size: 13px; line-height: 1.5; color: #E2E8F0; }
+    .nav-bar { display: flex; justify-content: space-between; gap: 10px; margin-top: 16px; padding-top: 14px; border-top: 1px solid #1E293B; }
+    .btn-nav { padding: 10px 18px; border-radius: 12px; font-size: 12px; font-weight: bold; border: none; cursor: pointer; }
+    .btn-secondary { background: #1E293B; color: #CBD5E1; }
+    .btn-primary { background: #FF8300; color: #FFF; }
+    .drawer { position: fixed; inset: 0; background: rgba(2, 6, 23, 0.85); backdrop-filter: blur(4px); z-index: 100; display: flex; flex-direction: column; justify-content: flex-end; }
+    .drawer-content { background: #0F172A; border-top: 1px solid #1E293B; border-radius: 24px 24px 0 0; padding: 18px; max-height: 75vh; display: flex; flex-direction: column; gap: 12px; }
+    .drawer-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; overflow-y: auto; max-height: 45vh; padding: 4px 0; }
+    .grid-btn { height: 38px; border-radius: 10px; border: 1px solid #334155; background: #1E293B; color: #E2E8F0; font-size: 12px; font-weight: bold; cursor: pointer; }
+    .grid-btn.answered { background: #059669; border-color: #059669; color: #FFF; }
+    .grid-btn.marked { border: 2px solid #F59E0B; }
+    /* 錯題複習專用卡片 */
+    .wrong-card { background: #020617; border: 1px solid #334155; border-radius: 16px; padding: 16px; margin-top: 14px; text-align: left; }
+    .wrong-title { font-size: 13px; font-weight: bold; color: #F8FAFC; margin-bottom: 10px; line-height: 1.5; }
+    .ans-badge-user { font-size: 11px; padding: 8px 12px; border-radius: 8px; background: rgba(244, 63, 94, 0.15); color: #FB7185; border: 1px solid rgba(244, 63, 94, 0.3); margin-bottom: 6px; }
+    .ans-badge-correct { font-size: 11px; padding: 8px 12px; border-radius: 8px; background: rgba(16, 185, 129, 0.15); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.3); margin-bottom: 8px; }
+    .explanation-box { background: rgba(245, 158, 11, 0.08); border-left: 3px solid #F59E0B; padding: 10px 12px; border-radius: 0 8px 8px 0; font-size: 12px; color: #FCD34D; line-height: 1.6; }
+  </style>
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#111827">
+<meta name="format-detection" content="telephone=no">
+<style id="iphone-optimization">
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior-y: contain;
+  }
+  button, input, select, textarea { font-size: 16px; }
+  button, label, input[type="radio"], input[type="checkbox"] { touch-action: manipulation; }
+  @media (max-width: 680px) {
+    body { overflow-x: hidden; }
+    button { min-height: 44px; }
+    main { padding-left: 12px !important; padding-right: 12px !important; }
+  }
+  @media (display-mode: standalone) {
+    body { padding-top: env(safe-area-inset-top); }
+  }
+</style>
+
+</head>
+<body>
+  <header>
+    <div class="brand" onclick="app.setMode('setup')">
+      <div class="logo">H</div>
+      <div class="title-box">
+        <h1>HPE6-A86 <span class="badge">V9.02 官方考模</span></h1>
+        <p>60 題 / 90 分鐘 / 73% 及格 / 錯題原因解析</p>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- SETUP VIEW -->
+    <section id="view-setup" class="card">
+      <h2 style="font-size: 16px; font-weight: bold; margin-bottom: 6px;">HPE6-A86 官方標準模擬測驗</h2>
+      <p style="font-size: 12px; color: #94A3B8; margin-bottom: 14px;">隨機抽 60 題 + 每題選項隨機洗牌 + <b>交卷後完整列出錯題原因與觀念解析</b>。</p>
+
+      <div class="spec-grid">
+        <div class="spec-box"><span class="spec-label">正式題數</span><span class="spec-val" style="color:#FFF;">60 題</span></div>
+        <div class="spec-box"><span class="spec-label">考試時間</span><span class="spec-val" style="color:#FF8300;">90 分鐘</span></div>
+        <div class="spec-box"><span class="spec-label">及格標準</span><span class="spec-val" style="color:#10B981;">73% (44題)</span></div>
+      </div>
+
+      <button onclick="app.startExam()" class="btn-start">開始 60 題模擬測驗</button>
+    </section>
+
+    <!-- QUIZ VIEW -->
+    <section id="view-quiz" class="card hidden">
+      <div class="quiz-bar">
+        <span>題號：第 <b id="cur-idx" style="color:#FF8300; font-size:15px;">1</b> / <span id="total-idx">60</span> 題 (原題 <span id="orig-id"></span>)</span>
+        <div class="timer">倒數 <span id="timer-text">90:00</span></div>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <span id="q-type" class="badge">Single Choice</span>
+        <button onclick="app.toggleMark()" id="btn-mark" style="background:#1E293B; border:1px solid #334155; color:#94A3B8; padding:4px 10px; border-radius:8px; font-size:11px; cursor:pointer;">標記待查</button>
+      </div>
+
+      <div id="question-text" class="q-text"></div>
+      <div id="code-container" class="code-box hidden"></div>
+      <div id="options-container"></div>
+
+      <div class="nav-bar">
+        <button onclick="app.prevQ()" id="btn-prev" class="btn-nav btn-secondary">上一題</button>
+        <div style="display:flex; gap:8px;">
+          <button onclick="app.openDrawer()" class="btn-nav btn-secondary">題單一覽</button>
+          <button onclick="app.nextQ()" id="btn-next" class="btn-nav btn-primary">下一題</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCORE & MISTAKE REVIEW VIEW -->
+    <section id="view-score" class="card hidden" style="text-align:center;">
+      <h2 id="score-title" style="font-size:20px; font-weight:bold; margin-bottom:8px;"></h2>
+      <p style="font-size:12px; color:#94A3B8; margin-bottom:16px;">及格門檻為 73% (答對需 ≥ 44 題)</p>
+      
+      <div class="spec-grid">
+        <div class="spec-box"><span class="spec-label">答對率</span><span id="res-rate" class="spec-val" style="color:#FF8300;">0%</span></div>
+        <div class="spec-box"><span class="spec-label">答對題數</span><span id="res-correct" class="spec-val" style="color:#10B981;">0</span></div>
+        <div class="spec-box"><span class="spec-label">耗時</span><span id="res-time" class="spec-val" style="color:#FFF; font-family:monospace;">00:00</span></div>
+      </div>
+
+      <div style="display:flex; gap:8px; margin-top:12px;">
+        <button onclick="app.startExam()" class="btn-start">重新抽考 60 題</button>
+        <button id="btn-retry-wrong" onclick="app.retryMistakes()" class="btn-start" style="background:#E11D48; display:none;">僅重測本次錯題</button>
+      </div>
+      <button onclick="app.setMode('setup')" class="btn-save">回到首頁</button>
+
+      <!-- 錯題分析展示區 -->
+      <div id="wrong-container" style="margin-top:24px; text-align:left;">
+        <h3 id="wrong-header" style="font-size:15px; font-weight:bold; color:#FB7185; border-bottom:1px solid #1E293B; padding-bottom:8px;">
+          本次測驗錯題原因與解析 (<span id="wrong-count-badge">0</span> 題)
+        </h3>
+        <div id="wrong-list"></div>
+      </div>
+    </section>
+  </main>
+
+  <div id="drawer" class="drawer hidden">
+    <div class="drawer-content">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-weight:bold; font-size:13px;">題卷答題總覽 (綠:已答 | 橘框:標記)</span>
+        <button onclick="app.closeDrawer()" style="background:#334155; border:none; color:#FFF; width:28px; height:28px; border-radius:50%; cursor:pointer;">✕</button>
+      </div>
+      <div id="drawer-grid" class="drawer-grid"></div>
+      <button onclick="app.submitExamConfirm()" style="background:#E11D48; color:#FFF; border:none; padding:12px; border-radius:12px; font-weight:bold; cursor:pointer;">提早交卷結算</button>
+    </div>
+  </div>
+
+  <script>
+    // 依據 HPE6-A86 V9.02 PDF 原始考題與官方公佈答案文字構建，附帶精確原因解析
+    const BANK = [
+      { id: 1, type: "single", text: "When might a switch add a VLAN tag to a frame?", options: ["When it forwards the frame to a server", "When it forwards the frame to a PC or client", "When it forwards the frame to another switch", "When it accepts a frame from another switch", "When it accepts a frame from a server"], correct: ["When it forwards the frame to another switch"], exp: "交換器只有在透過 Trunk 埠將訊框轉發給其他交換器時，才會封裝 802.1Q VLAN Tag，以確保跨交換器的 VLAN 標籤資訊不流失。" },
+      { id: 2, type: "multiple", text: "A network administrator is responsible for maintaining a large number of HPE Aruba Networking CX switches. As a best practice, they regularly update the switch firmware. The administrator has downloaded a new firmware image, 'FL.10.09.1020.swi', to a TFTP server. The goal is to update the secondary image partition on a switch without interrupting the currently running primary image.\n\nWhich set of commands will achieve this administrative task? (Select all that apply.)", options: ["copy tftp://192.168.1.100/FL.10.09.1020.swi primary", "boot system secondary", "copy tftp://192.168.1.100/FL.10.09.1020.swi secondary", "show images", "write memory"], correct: ["copy tftp://192.168.1.100/FL.10.09.1020.swi secondary", "show images"], exp: "使用 copy tftp:... secondary 可將新韌體寫入備份分區而不中斷運作；接著用 show images 確認版本寫入成功。切勿執行 boot 指令以免設備重啟。" },
+      { id: 3, type: "single", text: "A Junior Network Engineer is troubleshooting a user's connectivity issue. The user is on the 10.10.10.0/24 network and is trying to reach a server on the 10.10.20.0/24 network. The user's traffic must pass through a router.\n\nWhat information must the user's computer have in its IP configuration to send traffic to a different subnet?", options: ["The MAC address of the server.", "A default gateway address.", "The IP address of a DNS server.", "A WINS server address."], correct: ["A default gateway address."], exp: "電腦要與不同網段（跨路由器）進行通訊時，必須配置預設閘道（Default Gateway），將封包送往閘道路由。" },
+      { id: 4, type: "single", text: "A Network Technician is configuring an access layer switch (ALS) to connect to a core switch. The connection uses two physical links that need to be bundled into a Link Aggregation Group (LAG) for increased bandwidth and redundancy. The LAG will function as a VLAN trunk to carry both Staff (VLAN 100) and Guest (VLAN 200) traffic. The technician must also enable RSTP for loop prevention.\n\nWhich configuration set correctly implements all the specified Layer 2 requirements?", options: ["spanning-tree mode rstp\nvlan 100,200\ninterface lag 1\n no shutdown\n vlan trunk allowed 100,200\n lacp mode active\ninterface 1/1/47-1/1/48\n no shutdown\n lag 1", "spanning-tree\nvlan 100,200\ninterface 1/1/47-1/1/48\n no shutdown\n lacp group 1 mode active\ninterface lag 1\n no shutdown\n vlan trunk allowed 100,200", "spanning-tree mode mstp\nvlan 100,200\ninterface lag 1\n no shutdown\n vlan access 100\n vlan trunk allowed 200\ninterface 1/1/47-1/1/48\n no shutdown\n lag 1", "vlan 100\nvlan 200\ninterface lag 1\n no shutdown\n vlan trunk allowed 100,200\ninterface 1/1/47-1/1/48\n no shutdown\n lag 1"], correct: ["spanning-tree mode rstp\nvlan 100,200\ninterface lag 1\n no shutdown\n vlan trunk allowed 100,200\n lacp mode active\ninterface 1/1/47-1/1/48\n no shutdown\n lag 1"], exp: "AOS-CX 語法中，啟用 RSTP 為 spanning-tree mode rstp；在 interface lag 1 中配置 lacp mode active 與 trunk 放行清單，並在實體介面下加入 lag 1。" },
+      { id: 5, type: "multiple", text: "What is true about managing AOS-CX devices? (Select two)", options: ["AOS-CX switches do not support out-of-band management (OOBM).", "AOS-CX switches starting with the CX 6200 Series and up support OOBM.", "In-band management and out-of-band management are mutually exclusive.", "In-band management is often used in campus networks."], correct: ["AOS-CX switches starting with the CX 6200 Series and up support OOBM.", "In-band management and out-of-band management are mutually exclusive."], exp: "CX 6200 級別以上均具備實體專用 OOBM 埠。在 AOS-CX 中，OOBM 屬於獨立的 vrf mgmt，與一般的 In-band 流量（vrf default）彼此隔離互斥。" },
+      { id: 6, type: "single", text: "A Solutions Architect is designing a new, highly resilient access layer using a stack of HPE Aruba Networking CX 6300 switches. To simplify management and provide seamless redundancy, the architect has decided to use the Virtual Switching Framework (VSF) to stack two switches together.\n\nWhich of the following command sets, when executed on Switch 1, correctly initiates the VSF formation process?", options: ["switch(config)# vsf member 1 link 1 1/1/49\nswitch(config)# vsf member 1 link 2 1/1/50\nswitch(config)# vsf enable domain 10", "switch(config)# vsf enable domain 10\nswitch(config)# vsf renumber-to 1", "switch(config)# vsf member 1 priority 200\nswitch(config)# vsf member 2 priority 100\nswitch(config)# vsf enable domain 10", "switch(config)# vsf link 1 interface 1/1\nswitch(config)# vsf link 2 interface 1/2\nswitch(config)# vsf enable domain 10"], correct: ["switch(config)# vsf member 1 link 1 1/1/49\nswitch(config)# vsf member 1 link 2 1/1/50\nswitch(config)# vsf enable domain 10"], exp: "啟動 VSF 堆疊的標準程序為先指定 member 1 的專用堆疊鏈路埠（link 1/2），最後輸入 vsf enable domain <id>。" },
+      { id: 7, type: "single", text: "A Network Technician is connecting two switches in different buildings that are 1.5 kilometers apart. The required connection speed is 1Gbps.\n\nWhich combination of Layer 1 media and transceiver type is most appropriate for this connection?", options: ["Multi-mode fiber and a 1000BASE-SX transceiver.", "Cat6a copper cable and an RJ-45 connector.", "Single-mode fiber and a 1000BASE-LX transceiver.", "Coaxial cable and a BNC connector."], correct: ["Single-mode fiber and a 1000BASE-LX transceiver."], exp: "距離長達 1.5 公里（>550 公尺）已超越多模光纖（MMF/SX）與雙絞銅線極限，必須使用單模光纖（SMF）搭配 1000BASE-LX（最遠支援 10km）。" },
+      { id: 8, type: "single", text: "A Junior Network Engineer is tasked with the initial setup of a new HPE Aruba Networking CX 6100 switch. The switch needs to be configured with a hostname, a secure local administrator password, and a management IP address so it can be accessed on the network.\n\nWhich of the following configuration sets correctly implements all the specified initial settings?", options: ["switch# configure terminal\nswitch(config)# hostname ALS-01\nALS-01(config)# password administrator plaintext Aruba!CX!2023\nALS-01(config)# interface vlan 1\nALS-01(config-if-vlan)# ip address 192.168.5.10/24", "switch(config)# set hostname ALS-01\nswitch(config)# password administrator Aruba!CX!2023\nswitch(config)# vlan 1 ip address 192.168.5.10/24", "switch# configure\nswitch(config)# hostname ALS-01\nALS-01(config)# password administrator\nEnter password: Aruba!CX!2023\nRetype password: Aruba!CX!2023\nALS-01(config)# interface default\nALS-01(config-if)# ip address 192.168.5.10 255.255.255.0", "switch# configure terminal\nswitch(config)# hostname ALS-01\nALS-01(config)# password administrator\nEnter password: Aruba!CX!2023\nRetype password: Aruba!CX!2023\nALS-01(config)# interface vlan 1\nALS-01(config-if-vlan)# ip address 192.168.5.10/24"], correct: ["switch# configure terminal\nswitch(config)# hostname ALS-01\nALS-01(config)# password administrator\nEnter password: Aruba!CX!2023\nRetype password: Aruba!CX!2023\nALS-01(config)# interface vlan 1\nALS-01(config-if-vlan)# ip address 192.168.5.10/24"], exp: "AOS-CX 的 password administrator 指令是採交談互動式輸入密碼，且 SVI IP 配置支援 CIDR 斜線表示法。" },
+      { id: 9, type: "single", text: "A Network Operator is troubleshooting a connectivity issue where a host (10.10.10.50) cannot communicate with its default gateway (10.10.10.1). When the operator checks the ARP table on the gateway, the entry for 10.10.10.50 is 'Incomplete'.\n\nWhat is the function of the Address Resolution Protocol (ARP) in this scenario?", options: ["To translate the private IP address of the host to a public IP address.", "To assign a dynamic IP address to the host.", "To determine the Layer 3 route the host should use to reach the gateway.", "To discover the MAC address of the host associated with the IP address 10.10.10.50."], correct: ["To discover the MAC address of the host associated with the IP address 10.10.10.50."], exp: "ARP 的核心功能是將已知的 Layer 3 IPv4 位址解析轉換為 Layer 2 的實體 MAC 位址。狀態為 Incomplete 代表發出 ARP 請求後未收到該主機回應。" },
+      { id: 10, type: "single", text: "A Solutions Architect is choosing between different switch families in the HPE Aruba Networking portfolio. The primary requirement for an upcoming deployment is support for Virtual Switching Framework (VSF) to stack up to 10 switches into a single logical device for simplified management at the campus aggregation layer.\n\nWhich switch series has this specific software and hardware capability?", options: ["Aruba CX 6000 Series", "Aruba CX 6300 Series", "All AOS-CX switches support 10-member VSF stacking.", "Aruba CX 8320 Series"], correct: ["Aruba CX 6300 Series"], exp: "Aruba CX 6300 系列支援高達 10 台 VSF 堆疊（CX 6200 上限為 8 台，CX 6000/6100 則不支援堆疊）。" },
+      { id: 11, type: "single", text: "A Solutions Architect is presenting the HPE Aruba Networking switching portfolio to a customer. The customer needs to understand the primary software differentiator of the AOS-CX operating system.\n\nWhich feature is a core component and key differentiator of the AOS-CX software architecture?", options: ["A monolithic kernel that combines all processes into a single software image.", "A microservices-based, database-driven architecture.", "A proprietary command-line interface that is unique to each switch model.", "Its exclusive support for the EIGRP routing protocol."], correct: ["A microservices-based, database-driven architecture."], exp: "AOS-CX 與傳統交換器系統最大的差異在於採用微服務架構與 OVSDB 資料庫驅動核心，讓各協定服務程序可以獨立重啟且狀態完整保留。" },
+      { id: 12, type: "single", text: "A Network Operator is configuring a new workstation with the IP address 10.5.5.100, subnet mask 255.255.255.0, and default gateway 10.5.5.1. The user needs to communicate with a server at 172.16.10.20.\n\nHow does the workstation determine where to send the packet?", options: ["It sends an ARP request for 172.16.10.20 to get its MAC address and sends the frame directly.", "It compares the server's IP address to its own subnet and determines it is on a remote network, then sends the packet to the MAC address of its default gateway.", "It sends the packet to the special broadcast MAC address (FF:FF:FF:FF:FF:FF) so the router can forward it.", "It sends a DNS query to find the correct route to the destination network."], correct: ["It compares the server's IP address to its own subnet and determines it is on a remote network, then sends the packet to the MAC address of its default gateway."], exp: "主機利用自身子網遮罩比對目的 IP，發現 172.16.10.20 屬於不同網段，因此將封包的目的 MAC 填入預設閘道（10.5.5.1）的 MAC 位址。" },
+      { id: 13, type: "single", text: "What is the primary purpose of implementing a LAG in a network environment?", options: ["To increase the number of network devices connected to the network", "To reduce the overall cost of network infrastructure deployment", "To prioritize specific types of traffic over others", "To aggregate multiple physical links into a single link for increased bandwidth and redundancy"], correct: ["To aggregate multiple physical links into a single link for increased bandwidth and redundancy"], exp: "鏈路聚合（LAG）將多條實體乙太網路鏈路綑綁為單一邏輯通道，實現頻寬疊加與鏈路故障容錯備援。" },
+      { id: 14, type: "single", text: "A Security Analyst is hardening a network and wants to implement filtering rules that block specific types of traffic based on the logical addresses of the source and destination. For example, they want to block all traffic from the 10.0.0.0/8 network.\n\nAt which layer of the OSI model do routers and multi-layer switches make forwarding decisions based on this type of logical addressing?", options: ["Layer 2 (Data Link)", "Layer 3 (Network)", "Layer 4 (Transport)", "Layer 7 (Application)"], correct: ["Layer 3 (Network)"], exp: "IP 位址（如 10.0.0.0/8）屬於邏輯位址，路由器與多層交換器在此層次（Layer 3 - Network 網路層）進行轉發與 ACL 過濾判定。" },
+      { id: 15, type: "single", text: "A network technician wants to capture traffic from a user's PC connected to port 1/1/5 and send a copy of that traffic to their own laptop, connected to port 1/1/24, for analysis with a protocol analyzer like Wireshark.\n\nWhich general troubleshooting feature should the technician configure on the switch to accomplish this?", options: ["ip helper-address", "loop-protect", "port-mirroring", "flow-control"], correct: ["port-mirroring"], exp: "連接埠鏡像（Port Mirroring / SPAN）可將指定來源連接埠的進出流量複製一份並鏡射至診斷埠，供分析工具側錄分析。" },
+      { id: 16, type: "single", text: "A Solutions Architect has just completed the Layer 3 configuration for a new campus core switch. The configuration includes several Switched Virtual Interfaces (SVIs) for inter-VLAN routing and a static default route for internet access.\n\nWhich of the following validation commands provides this complete overview of the switch's Layer 3 forwarding information?", options: ["show ip interface brief", "show running-config", "show ip route", "show arp"], correct: ["show ip route"], exp: "show ip route 指令提供交換器完整的 Layer 3 路由轉發表總覽，包含直連網段 SVI、靜態預設路由及對應的下一跳 IP。" },
+      { id: 17, type: "single", text: "A Solutions Architect is diagnosing a network issue where a specific server is unreachable. The architect uses 'traceroute' and the output stops at a particular router, which is the last responsive hop (10.10.1.2).\n\nWhich command would the architect use on the router at 10.10.1.2 to validate its entire Layer 3 forwarding table?", options: ["show mac-address-table", "show ip route", "show lldp neighbor-info", "show interface brief"], correct: ["show ip route"], exp: "若要確認路由器為何未轉發封包，應登入該設備並執行 show ip route 檢視其是否擁有前往目標網段的路由。" },
+      { id: 18, type: "single", text: "Which port role in RSTP is responsible for forwarding traffic toward the root bridge?", options: ["Root port", "Designated port", "Alternate port", "Edge port"], correct: ["Root port"], exp: "在 RSTP 中，非根橋（Non-Root Bridge）上通往根橋路徑成本最低且負責轉發流量的連接埠稱為 Root port（根埠）。" },
+      { id: 19, type: "single", text: "A Network Operator is investigating a report of intermittent connectivity between a user in the Sales VLAN (VLAN 10, subnet 192.168.10.0/24) and a server in the Finance VLAN (VLAN 20, subnet 192.168.20.0/24).\n\nWhich command should the operator use from the core switch's CLI to trace the real-time, hop-by-hop path between the user and the server?", options: ["ping 192.168.20.5", "show arp | include 192.168.20.5", "debug ip routing", "traceroute 192.168.20.5 source 192.168.10.1"], correct: ["traceroute 192.168.20.5 source 192.168.10.1"], exp: "traceroute <目的IP> source <來源介面IP> 能逐跳追蹤路徑並量測各節點延遲，以精準找出封包遺失或路由迴圈的位置。" },
+      { id: 20, type: "single", text: "What is the administrative distance of a directly connected route?", options: ["0", "1", "90", "100"], correct: ["0"], exp: "直連路由（Directly Connected Route）在路由表中具備最高優先度，其管理距離（Administrative Distance）固定為 0。" },
+      { id: 21, type: "multiple", text: "Which are true about VSF stacking? (Select two)", options: ["AOS-CX and AOS-S switches can be mixed in a VSF stack.", "CX 6200 Series and CX 6300 Series can be mixed in a VSF stack.", "Different models of CX 6200 Series can be mixed in a VSF stack.", "CX 8325 Series VSF stack supports up to 10 switches.", "The use of VSF is recommended in the access layer of a campus network."], correct: ["Different models of CX 6200 Series can be mixed in a VSF stack.", "The use of VSF is recommended in the access layer of a campus network."], exp: "同系列機種（如 CX 6200F/M）允許混搭堆疊；VSF 適合部署於校園網接入層（Access Layer）簡化管理。跨系列機種或 CX 8325 均不支援 VSF。" },
+      { id: 22, type: "single", text: "A Network Operator needs to ensure that VoIP traffic is given the highest priority as it traverses the network. The operator decides to use Layer 3 QoS marking.\n\nWhich IP header field is used by routers to carry this QoS marking information, often referred to as the DSCP value?", options: ["The Protocol field", "The Differentiated Services (DiffServ) field", "The Fragment Offset field", "The Time to Live (TTL) field"], correct: ["The Differentiated Services (DiffServ) field"], exp: "IPv4 標頭中的 DiffServ（Differentiated Services）欄位即用來攜帶 6 位元的 DSCP QoS 標記值以進行優先排程。" },
+      { id: 23, type: "multiple", text: "A Network Operator is setting up a new server that will host a secure website (HTTPS) and also respond to basic network connectivity tests.\n\nWhich two well-known TCP or UDP ports would the server need to have open on its firewall to allow these two services? (Choose 2.)", options: ["22 (SSH)", "53 (DNS)", "80 (HTTP)", "443 (HTTPS)", "ICMP is a Layer 3 protocol and does not use ports."], correct: ["443 (HTTPS)", "ICMP is a Layer 3 protocol and does not use ports."], exp: "HTTPS 網站服務使用 TCP 443；基本連線測試（ping）使用 ICMP 協定，ICMP 屬於 Layer 3 運作，本身不使用 Layer 4 埠號。" },
+      { id: 24, type: "single", text: "A Network Operator is in a data center and needs to quickly provision a new HPE Aruba Networking CX switch using a smartphone without a laptop.\n\nWhich tool is specifically designed for this on-site, mobile-first workflow?", options: ["The serial console port.", "The REST API.", "Aruba Central via a web browser.", "The Aruba CX Mobile App."], correct: ["The Aruba CX Mobile App."], exp: "Aruba CX Mobile App 專門為現場工程師透過手機藍牙或 Wi-Fi 快速完成交換器初始上線、設定佈署與狀態檢查而設計。" },
+      { id: 25, type: "single", text: "A Network Operator is managing a diverse network of HPE Aruba Networking switches, including data center and campus models. The operator needs a centralized, cloud-based platform to manage, monitor, and configure all of these devices from a single dashboard.\n\nWhich HPE Aruba Networking solution is designed for this purpose?", options: ["HPE iLO (Integrated Lights-Out)", "Aruba NetEdit", "Aruba Central", "The local Web UI of each switch"], correct: ["Aruba Central"], exp: "Aruba Central 是 Aruba 的雲端管理平台，提供跨站點、統一儀表板集中管理校園與資料中心交換器及 AP。" },
+      { id: 26, type: "single", text: "What IP protocol number is associated with OSPF?", options: ["6", "17", "89", "123", "255"], correct: ["89"], exp: "OSPF 封包直接封裝於 IPv4 標頭中，其協議號碼（IP Protocol Number）為 89（TCP 為 6，UDP 為 17）。" },
+      { id: 27, type: "single", text: "A Junior Network Engineer is remotely managing an AOS-CX switch. The company policy allows for non-encrypted transfers within the secure management network.\n\nWhich protocol provides capabilities for both uploading and downloading files and uses a separate control and data connection?", options: ["Telnet", "SNMPv2", "TFTP", "FTP"], correct: ["FTP"], exp: "FTP 同時支援檔案上傳與下載，並使用獨立的控制連線（Port 21）與資料連線（Port 20）。" },
+      { id: 28, type: "multiple", text: "What are the default AOS-CX user groups? (Select three)", options: ["Manager", "Administrator", "Visitor", "Operator", "Guest", "Auditor"], correct: ["Administrator", "Operator", "Auditor"], exp: "AOS-CX 預設內建的三種使用者權限群組為：administrators（全權管理）、operators（維運檢視）、auditors（稽核日誌檢視）。" },
+      { id: 29, type: "single", text: "Review the following command:\ncopy running-config sftp://admin@10.1.1.5/configs/CX6400_backup.cfg vrf mgmt\n\nWhich statement accurately describes the outcome of executing this command?", options: ["The command will fail because the 'vrf mgmt' parameter is only used for TFTP transfers.", "The running configuration will be securely copied to the specified directory on the SFTP server using the management VRF.", "The command copies the startup configuration, not the running configuration, to the SFTP server.", "The configuration will be copied in plain text, as SFTP only encrypts the authentication, not the data transfer itself."], correct: ["The running configuration will be securely copied to the specified directory on the SFTP server using the management VRF."], exp: "該指令透過管理隔離網段（vrf mgmt）建立 SSH/SFTP 加密連線，將目前的運作設定檔（running-config）安全備份到 SFTP 伺服器。" },
+      { id: 30, type: "single", text: "Which command could you use to validate the status of the interfaces on the switch?", options: ["show running-config", "show system", "show interface brief", "show events", "show interface transceiver detail"], correct: ["show interface brief"], exp: "show interface brief 能以簡潔表格綜覽整台交換器所有連接埠的 Link 狀態（Up/Down）、速率、雙工模式及所屬 VLAN。" },
+      { id: 32, type: "single", text: "Which IEEE standard defines the Link Aggregation Control Protocol (LACP)?", options: ["IEEE 802.1Q", "IEEE 802.3ad", "IEEE 802.11", "IEEE 802.15.4"], correct: ["IEEE 802.3ad"], exp: "動態鏈路聚合控制協定（LACP）最初由 IEEE 802.3ad 標準所規範（後續納入 802.1AX）。" },
+      { id: 34, type: "single", text: "A Network Technician wants a single command that produces a table-like output, with one line per interface, showing the interface name, its IP address, and its status for all SVIs and management ports.\n\nWhich of the following validation commands is the best tool for this specific purpose?", options: ["show running-config", "show interface brief", "show ip route", "show ip interface brief"], correct: ["show ip interface brief"], exp: "show ip interface brief 專門用於列出所有已配置 IP 的介面（包含 SVI 與 OOBM），顯示其 IP 位址與 Admin/Line 狀態。" },
+      { id: 35, type: "multiple", text: "Which of the options below accurately describes the difference between collision domains and broadcast domains? (Select two)", options: ["Collision domains relate to Layer 2 processes, while broadcast domains are a Layer 3 concept.", "Collisions are quite common in modern network switches.", "A routing device defines the edge of a broadcast domain.", "A switch port defines the edge of a collision domain.", "Broadcast domains are mainly a problem when you use a hub device."], correct: ["Collisions are quite common in modern network switches.", "A routing device defines the edge of a broadcast domain."], exp: "路由器（或三層介面）隔離廣播網段（Broadcast Domain）；此外考卷公佈答案認可近代交換器環境下相關概念分析。" },
+      { id: 41, type: "single", text: "Which access control method involves granting access to network resources based on the physical address of the Network Interface Card (NIC)?", options: ["Port authentication", "Secure certificate verification", "Web authentication", "MAC authentication"], correct: ["MAC authentication"], exp: "MAC 認證（MAC Authentication）是根據終端網卡的實體硬體位址（MAC Address）來核對授權存取網路。" },
+      { id: 44, type: "single", text: "A Solutions Architect is designing a highly available core layer using two CX 8325 switches with VSF stacking.\n\nWhat is the primary benefit of using VSF in this design compared to traditional redundancy protocols like STP?", options: ["It increases the number of available physical ports by combining the ports of both switches.", "It allows both switches in the stack to actively forward traffic simultaneously, effectively doubling the core bandwidth.", "It simplifies IP address management by assigning a separate IP address to each switch in the stack.", "It provides faster convergence than STP by using Layer 3 OSPF for loop prevention."], correct: ["It allows both switches in the stack to actively forward traffic simultaneously, effectively doubling the core bandwidth."], exp: "虛擬堆疊（VSF）讓兩台實體設備邏輯虛擬化為一體，所有跨機鏈路均處於雙主動轉發狀態，消除了 STP 阻斷埠問題並使可用頻寬倍增。" },
+      { id: 50, type: "single", text: "A Support Technician is working with an Aruba CX 6400 Series chassis switch. The customer needs to add 10Gbps SFP+ connectivity to the switch.\n\nWhat hardware component must be installed in the chassis to provide this physical port connectivity?", options: ["A VSF stacking module.", "A management module.", "A line card.", "A redundant fan tray."], correct: ["A line card."], exp: "在 CX 6400 機箱式模組化交換器中，實體光纖或銅線連接埠是透過安裝介面線卡（Line Card）來擴充提供。" },
+      { id: 51, type: "single", text: "A network administrator confirms router A has hello interval 5 and router B has hello interval 10.\n\nWhat is the most likely reason the OSPF adjacency is not forming?", options: ["The OSPF router-id is not configured on the interface.", "The OSPF area is misconfigured as a backbone area.", "The OSPF hello timers do not match between the two routers.", "The interface is missing an 'ip ospf network point-to-point' command."], correct: ["The OSPF hello timers do not match between the two routers."], exp: "OSPF 要求同網段相鄰路由器之間的 Hello 與 Dead 計時器數值必須完全一致，否則無法建立鄰居鄰接關係。" },
+      { id: 52, type: "multiple", text: "Which AOS-CX switch series are chassis based? (Select two)", options: ["CX 8325 Series", "CX 6400 Series", "CX 10000 Series", "CX 8400 Series"], correct: ["CX 6400 Series", "CX 8400 Series"], exp: "Aruba CX 6400（模組化 5/10 槽機箱）與 CX 8400（8 槽機箱）屬於機箱式（Chassis-based）交換器架構。" },
+      { id: 57, type: "single", text: "Which component of the AAA framework involves checking what a user is allowed to do?", options: ["Authentication", "Authorization", "Accounting", "Availability"], correct: ["Authorization"], exp: "AAA 架構中：Authentication（身分驗證確認你是誰）、Authorization（授權檢查你能做什麼）、Accounting（記錄審計做了什麼）。" },
+      { id: 58, type: "single", text: "What is the primary advantage of using RSTP (802.1w) over the original Spanning Tree Protocol (STP, 802.1D)?", options: ["RSTP supports more VLANs than STP.", "RSTP significantly reduces the convergence time after a link failure.", "RSTP allows all ports to forward traffic simultaneously by load balancing.", "RSTP uses a more secure method for electing the root bridge."], correct: ["RSTP significantly reduces the convergence time after a link failure."], exp: "RSTP（802.1w 快速生成樹）利用提議與協同握手機制，使網路拓撲在發生斷線時可在數百毫秒內迅速收斂（相較於傳統 STP 的 30~50 秒）。" },
+      { id: 63, type: "single", text: "What is the primary function of a routing table in a troubleshooting scenario?", options: ["To store the MAC addresses of all connected devices.", "To provide a list of all active physical interfaces on the switch.", "To map VLAN IDs to specific switch ports.", "To determine the next-hop path for forwarding packets to a destination network."], correct: ["To determine the next-hop path for forwarding packets to a destination network."], exp: "路由表（Routing Table）的核心功能即是記錄目標網段與對應的下一跳（Next-hop）路徑，以引導跨網段封包轉發。" },
+      { id: 70, type: "single", text: "Which validation command provides VSF Domain ID, Active status, Commander/Standby roles, and member MAC addresses in one consolidated output?", options: ["show interface brief", "show lldp neighbor-info", "show vsf", "show vsf link"], correct: ["show vsf"], exp: "show vsf 綜覽整個堆疊的 Domain ID、運作狀態、Commander/Standby 成員角色及各自的硬體 MAC 位址。" },
+      { id: 74, type: "single", text: "Which port security configuration allows only the first two devices that connect to a port to gain access, and blocks subsequent devices?", options: ["port-security client-limit 2", "port-security mac-address sticky", "port-security violation shutdown", "port-security enable"], correct: ["port-security client-limit 2"], exp: "port-security client-limit 2 指令限制該交換埠最多僅允許前兩台連入設備的 MAC 位址通過，超過即予阻絕。" },
+      { id: 80, type: "single", text: "Which command should the operator use to immediately restore the switch's active configuration from checkpoint 'pre-change-01'?", options: ["copy startup-config running-config", "checkpoint rollback pre-change-01", "erase startup-config followed by a reboot", "copy checkpoint pre-change-01 startup-config followed by a reboot"], correct: ["checkpoint rollback pre-change-01"], exp: "checkpoint rollback <名稱> 能在設備不重新開機的狀態下，即時動態將當前設定回滾至指定的檢查點快照狀態。" },
+      { id: 85, type: "single", text: "In which layer should the network have the faster switches (throughput)?", options: ["Access layer", "Aggregation layer", "Core layer", "Layer 2"], correct: ["Core layer"], exp: "核心層（Core Layer）負責承載全校園網所有匯聚交換器之間的高速封包交換，需要具備最高吞吐量與極低延遲。" },
+      { id: 91, type: "single", text: "What is the default multicast IP address used for sending OSPF hello packets?", options: ["224.0.0.1", "224.0.0.2", "224.0.0.3", "224.0.0.4", "224.0.0.5"], correct: ["224.0.0.5"], exp: "OSPF 使用 224.0.0.5 群播位址發送 Hello 封包給所有 OSPF 路由器（224.0.0.6 則代表指定給 DR/BDR）。" },
+      { id: 96, type: "single", text: "What Layer 2 protocol is specifically designed to prevent broadcast loops in a redundant topology by logically blocking paths?", options: ["ARP (Address Resolution Protocol)", "LACP (Link Aggregation Control Protocol)", "STP (Spanning Tree Protocol)", "LLDP (Link Layer Discovery Protocol)"], correct: ["STP (Spanning Tree Protocol)"], exp: "生成樹協定（STP）專門用於在具備實體備援線路的二層網路中邏輯阻斷多餘路徑，以杜絕廣播風暴與迴圈。" },
+      { id: 98, type: "single", text: "Which command correctly configures a static default route to the firewall at IP address 172.16.254.1?", options: ["ip route 0.0.0.0/0 172.16.254.1", "ip route any any 172.16.254.1", "ip default-gateway 172.16.254.1", "ip route 172.16.254.1 0.0.0.0/0"], correct: ["ip route 0.0.0.0/0 172.16.254.1"], exp: "AOS-CX 建立預設靜態路由的正確標準語法為 ip route 0.0.0.0/0 <下一跳IP>。" },
+      { id: 102, type: "single", text: "Which management option provides an encrypted, browser-based graphical user interface for switch configuration and monitoring?", options: ["The serial console port", "The out-of-band management (OOBM) port", "The HTTPS web interface", "The Telnet service"], correct: ["The HTTPS web interface"], exp: "AOS-CX 內建 HTTPS 網頁介面，提供加密且視覺化的圖形介面（Web GUI）以進行設定與狀態監控。" },
+      { id: 110, type: "single", text: "What is the primary purpose of Spanning Tree Protocol (STP) in Ethernet networks?", options: ["Load balancing", "Loop prevention", "Quality of Service (QoS) management", "Network segmentation"], correct: ["Loop prevention"], exp: "STP 在乙太網路中的首要任務即為「迴圈防護（Loop Prevention）」，避免二層廣播風暴使網路癱瘓。" },
+      { id: 115, type: "single", text: "A point-to-point link uses the 10.255.0.0/30 subnet. What is the first usable host IP address in this subnet?", options: ["10.255.0.0", "10.255.0.1", "10.255.0.2", "10.255.0.3"], correct: ["10.255.0.1"], exp: "/30 網段中：10.255.0.0 為網路位址，第一個可用 IP 為 10.255.0.1，第二個可用 IP 為 10.255.0.2，廣播位址為 10.255.0.3。" },
+      { id: 127, type: "single", text: "Which single command must be enabled in the global configuration context to activate the switch's Layer 3 routing capabilities?", options: ["ip default-gateway", "router ospf 1", "ip routing", "enable"], correct: ["ip routing"], exp: "AOS-CX 交換器必須在全域設定模式下輸入 ip routing 指令，才能正式啟用 SVI 之間的跨網段路由功能。" },
+      { id: 134, type: "single", text: "A server needs to download its boot file from the switch without the overhead of authentication or encryption for PXE. Which protocol is most suitable?", options: ["SFTP", "FTP", "TFTP (Trivial File Transfer Protocol)", "SNMPv2"], correct: ["TFTP (Trivial File Transfer Protocol)"], exp: "TFTP 不需身分驗證與加密負擔，極為輕量簡便，普遍做為 PXE 網路開機映像檔下載的業界標準協定。" },
+      { id: 139, type: "single", text: "Which is the most appropriate and future-proof type of copper cabling to install that supports 1Gbps today with potential upgrade to 5Gbps up to 90 meters?", options: ["Cat5e", "Cat6", "Cat6a", "Cat7"], correct: ["Cat6a"], exp: "Cat6a（Category 6 Augmented）能在最遠 100 公尺距離下穩定支援 10Gbps 高速頻寬，具備最高的未來升級彈性。" },
+      { id: 146, type: "single", text: "Which management tool set is specifically designed to provide a single, unified cloud-based view for monitoring, configuration, and troubleshooting from anywhere?", options: ["The individual HTTPS web interface on each switch.", "A script-based solution using the REST API and Python.", "Aruba Central, a cloud-based management platform.", "The Aruba CX Mobile App."], correct: ["Aruba Central, a cloud-based management platform."], exp: "Aruba Central 為雲端原生平台，專為跨多地理區域的網路提供單一集中儀表板進行管理、排錯與監控。" },
+      { id: 154, type: "single", text: "What is the correct sequence of flags in the TCP headers for establishing a connection?", options: ["SYN -> ACK -> FIN", "SYN -> SYN-ACK -> ACK", "ACK -> SYN-ACK -> SYN", "FIN -> FIN-ACK -> ACK"], correct: ["SYN -> SYN-ACK -> ACK"], exp: "TCP 三向交握（Three-Way Handshake）建立連線的旗標依序為：SYN（客戶端） ➔ SYN-ACK（伺服端） ➔ ACK（客戶端）。" },
+      { id: 158, type: "single", text: "Suppose that a router has learned about network 172.18.37.0/24 from three sources - OSPF, Internal BGP, and a static route. Which statement is true about this router's path selection?", options: ["The router chooses the OSPF route, because it is trusted more than BGP.", "The router chooses the best path based on the lowest cost.", "The router chooses the option with the highest administrative distance.", "The router chooses the static route."], correct: ["The router chooses the static route."], exp: "當不同路由協定學到相同網段時，路由器優先選擇管理距離（AD）最小者。靜態路由 AD=1 < OSPF (AD=110) < iBGP (AD=200)。" },
+      { id: 164, type: "single", text: "Which command saves the current, active 'running-config' to the permanent startup-config?", options: ["save configuration", "copy running-config startup-config", "commit changes", "reload"], correct: ["copy running-config startup-config"], exp: "AOS-CX 使用 copy running-config startup-config（或 write memory）將目前運作中的設定存檔到永久儲存空間。" },
+      { id: 185, type: "single", text: "Which security feature authenticates a device based on its hardware address before allowing it on the network?", options: ["MAC authentication", "802.1X authentication", "Captive Portal authentication", "Local User Role authentication"], correct: ["MAC authentication"], exp: "MAC 認證（MAC Authentication）是根據端點設備網卡的實體 MAC 硬體位址在認證伺服器比對授權。" },
+      { id: 187, type: "single", text: "Which specific software feature, unique to AOS-CX, is designed for intelligent, on-box monitoring and event-driven automation?", options: ["The industry-standard SNMP agent", "The Aruba Network Analytics Engine (NAE)", "The built-in packet capture utility (tcpdump)", "The out-of-band management (OOBM) port"], correct: ["The Aruba Network Analytics Engine (NAE)"], exp: "Aruba NAE（網路分析引擎）利用內建 Python 腳本在設備上即時訂閱 OVSDB 狀態變更，自動診斷異常並收集除錯資料。" },
+      { id: 196, type: "single", text: "A Junior Network Engineer is working in an environment where plaintext management is strictly forbidden. Which protocol should be disabled?", options: ["SFTP", "SNMPv2", "Telnet", "FTP"], correct: ["Telnet"], exp: "Telnet 採用明文傳輸所有帳號密碼與指令，違反資安政策，必須停用並強制採用加密的 SSH。" },
+      { id: 198, type: "single", text: "Which feature should be enabled on the user-facing ports of access layer switches to prevent them from processing superior BPDUs from unauthorized devices?", options: ["BPDU Guard", "Root Guard", "Loop Guard", "Port Security"], correct: ["BPDU Guard"], exp: "在邊緣接入埠啟用 BPDU Guard 可在收到任何非法交換器送來的 BPDU 訊框時立刻關閉該埠，保護生成樹拓撲穩定。" }
+    ];
+
+    class ExamEngine {
+      constructor() {
+        this.exam = [];
+        this.cur = 0;
+        this.userAnswers = {};
+        this.marks = new Set();
+        this.timer = null;
+        this.timeLeft = 90 * 60;
+        this.endTime = Date.now() + this.timeLeft * 1000;
+        this.mistakesList = [];
+        this.setMode('setup');
+      }
+
+      setMode(mode) {
+        ['setup', 'quiz', 'score'].forEach(m => {
+          document.getElementById('view-' + m).classList.toggle('hidden', m !== mode);
+        });
+        window.scrollTo(0,0);
+      }
+
+      startExam() {
+        let list = [...BANK].sort(() => Math.random() - 0.5);
+        let selected = list.slice(0, 60);
+
+        this.exam = selected.map(q => {
+          let shuffled = [...q.options].sort(() => Math.random() - 0.5);
+          return { ...q, shuffledOptions: shuffled };
+        });
+
+        this.cur = 0;
+        this.userAnswers = {};
+        this.marks.clear();
+        this.timeLeft = 90 * 60;
+        document.getElementById('total-idx').innerText = this.exam.length;
+        this.startTimer();
+        this.setMode('quiz');
+        this.renderQ();
+      }
+
+      retryMistakes() {
+        if (this.mistakesList.length === 0) return;
+        this.exam = this.mistakesList.map(q => {
+          let shuffled = [...q.options].sort(() => Math.random() - 0.5);
+          return { ...q, shuffledOptions: shuffled };
+        });
+        this.cur = 0;
+        this.userAnswers = {};
+        this.marks.clear();
+        this.timeLeft = 90 * 60;
+        document.getElementById('total-idx').innerText = this.exam.length;
+        this.startTimer();
+        this.setMode('quiz');
+        this.renderQ();
+      }
+
+      startTimer() {
+        clearInterval(this.timer);
+        this.updateTimerDisplay();
+        this.timer = setInterval(() => {
+          this.timeLeft = Math.max(0, Math.ceil((this.endTime - Date.now()) / 1000));
+          this.updateTimerDisplay();
+          if (this.timeLeft <= 0) {
+            clearInterval(this.timer);
+            alert("90 分鐘考試時間結束，系統自動交卷！");
+            this.finishExam();
+          }
+        }, 1000);
+      }
+
+      updateTimerDisplay() {
+        const m = Math.floor(this.timeLeft / 60);
+        const s = this.timeLeft % 60;
+        const str = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        const el = document.getElementById('timer-text');
+        if (el) {
+          el.innerText = str;
+          if (this.timeLeft <= 300) el.style.color = '#F43F5E';
+          else el.style.color = '#F1F5F9';
+        }
+      }
+
+      renderQ() {
+        const q = this.exam[this.cur];
+        if (!q) return;
+
+        document.getElementById('cur-idx').innerText = this.cur + 1;
+        document.getElementById('orig-id').innerText = `Q#${q.id}`;
+        document.getElementById('question-text').innerText = `${this.cur + 1}. ${q.text}`;
+
+        const codeContainer = document.getElementById('code-container');
+        if (q.code) {
+          codeContainer.innerText = q.code;
+          codeContainer.classList.remove('hidden');
+        } else {
+          codeContainer.classList.add('hidden');
+        }
+
+        const typeBadge = document.getElementById('q-type');
+        typeBadge.innerText = q.type === 'single' ? 'Single Choice' : `Multiple Choice (選 ${q.correct.length} 項)`;
+
+        const markBtn = document.getElementById('btn-mark');
+        if (this.marks.has(q.id)) {
+          markBtn.style.color = '#F59E0B';
+          markBtn.style.borderColor = '#F59E0B';
+          markBtn.innerText = '★ 已標記';
+        } else {
+          markBtn.style.color = '#94A3B8';
+          markBtn.style.borderColor = '#334155';
+          markBtn.innerText = '標記待查';
+        }
+
+        const container = document.getElementById('options-container');
+        container.innerHTML = '';
+        const curAns = this.userAnswers[q.id];
+
+        q.shuffledOptions.forEach((optText, idx) => {
+          const letter = String.fromCharCode(65 + idx);
+          const isMultiple = q.type === 'multiple';
+          const isSelected = isMultiple ? (Array.isArray(curAns) && curAns.includes(optText)) : (curAns === optText);
+
+          const div = document.createElement('div');
+          div.className = 'option-item' + (isSelected ? ' selected' : '');
+          div.onclick = () => this.selectOpt(optText, q);
+          div.innerHTML = `
+            <div class="opt-circle">${letter}</div>
+            <div class="opt-text">${optText}</div>
+          `;
+          container.appendChild(div);
+        });
+
+        document.getElementById('btn-prev').disabled = (this.cur === 0);
+        const nextBtn = document.getElementById('btn-next');
+        if (this.cur === this.exam.length - 1) {
+          nextBtn.innerText = '交卷結算';
+          nextBtn.onclick = () => this.submitExamConfirm();
+        } else {
+          nextBtn.innerText = '下一題';
+          nextBtn.onclick = () => this.nextQ();
+        }
+      }
+
+      selectOpt(optText, q) {
+        if (q.type === 'single') {
+          this.userAnswers[q.id] = optText;
+        } else {
+          let list = Array.isArray(this.userAnswers[q.id]) ? [...this.userAnswers[q.id]] : [];
+          if (list.includes(optText)) list = list.filter(t => t !== optText);
+          else list.push(optText);
+          this.userAnswers[q.id] = list.sort();
+        }
+        this.renderQ();
+      }
+
+      toggleMark() {
+        const q = this.exam[this.cur];
+        if (this.marks.has(q.id)) this.marks.delete(q.id);
+        else this.marks.add(q.id);
+        this.renderQ();
+      }
+
+      nextQ() {
+        if (this.cur < this.exam.length - 1) {
+          this.cur++;
+          this.renderQ();
+        }
+      }
+
+      prevQ() {
+        if (this.cur > 0) {
+          this.cur--;
+          this.renderQ();
+        }
+      }
+
+      openDrawer() {
+        const grid = document.getElementById('drawer-grid');
+        grid.innerHTML = '';
+        this.exam.forEach((q, idx) => {
+          const btn = document.createElement('button');
+          const isAns = this.userAnswers[q.id] !== undefined && (!Array.isArray(this.userAnswers[q.id]) || this.userAnswers[q.id].length > 0);
+          const isMark = this.marks.has(q.id);
+          let cls = 'grid-btn';
+          if (isAns) cls += ' answered';
+          if (isMark) cls += ' marked';
+          btn.className = cls;
+          btn.innerText = idx + 1;
+          btn.onclick = () => {
+            this.cur = idx;
+            this.closeDrawer();
+            this.renderQ();
+          };
+          grid.appendChild(btn);
+        });
+        document.getElementById('drawer').classList.remove('hidden');
+      }
+
+      closeDrawer() {
+        document.getElementById('drawer').classList.add('hidden');
+      }
+
+      submitExamConfirm() {
+        this.closeDrawer();
+        const answered = Object.keys(this.userAnswers).length;
+        if (confirm(`您目前已作答 ${answered} / ${this.exam.length} 題，確定現在交卷嗎？`)) {
+          this.finishExam();
+        }
+      }
+
+      finishExam() {
+        clearInterval(this.timer);
+        let correct = 0;
+        this.mistakesList = [];
+
+        this.exam.forEach(q => {
+          const userAns = this.userAnswers[q.id];
+          let isQCorrect = false;
+
+          if (userAns !== undefined) {
+            if (q.type === 'single') {
+              if (q.correct.includes(userAns)) isQCorrect = true;
+            } else if (q.type === 'multiple') {
+              const uSorted = [...userAns].sort();
+              const cSorted = [...q.correct].sort();
+              if (JSON.stringify(uSorted) === JSON.stringify(cSorted)) isQCorrect = true;
+            }
+          }
+
+          if (isQCorrect) {
+            correct++;
+          } else {
+            this.mistakesList.push({
+              ...q,
+              userPicked: userAns || "未作答"
+            });
+          }
+        });
+
+        const total = this.exam.length;
+        const pct = Math.round((correct / total) * 100);
+        const pass = pct >= 73;
+
+        document.getElementById('res-rate').innerText = `${pct}%`;
+        document.getElementById('res-correct').innerText = `${correct} / ${total}`;
+        const timeUsed = (90 * 60) - this.timeLeft;
+        const m = Math.floor(timeUsed / 60);
+        const s = timeUsed % 60;
+        document.getElementById('res-time').innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+
+        const title = document.getElementById('score-title');
+        if (pass) {
+          title.style.color = '#10B981';
+          title.innerText = '🏆 恭喜測驗通過 (PASS)！';
+        } else {
+          title.style.color = '#F43F5E';
+          title.innerText = '未達 73% 及格門檻 (FAIL)';
+        }
+
+        // 渲染錯題清單與原因解析
+        this.renderMistakes();
+        this.setMode('score');
+      }
+
+      renderMistakes() {
+        const wrongListContainer = document.getElementById('wrong-list');
+        const countBadge = document.getElementById('wrong-count-badge');
+        const retryBtn = document.getElementById('btn-retry-wrong');
+        countBadge.innerText = this.mistakesList.length;
+        wrongListContainer.innerHTML = '';
+
+        if (this.mistakesList.length === 0) {
+          wrongListContainer.innerHTML = '<div style="padding:16px; color:#10B981; font-size:13px; text-align:center;">太棒了！本次測驗完全零失誤！</div>';
+          retryBtn.style.display = 'none';
+          return;
+        }
+
+        retryBtn.style.display = 'block';
+
+        this.mistakesList.forEach((m, idx) => {
+          const div = document.createElement('div');
+          div.className = 'wrong-card';
+          
+          let userDisplay = Array.isArray(m.userPicked) ? m.userPicked.join('<br>') : m.userPicked;
+          let correctDisplay = m.correct.join('<br>');
+
+          div.innerHTML = `
+            <div class="wrong-title">
+              <span style="color:#FF8300; margin-right:4px;">錯題 ${idx + 1}.</span> 
+              <span>[原題 #Q${m.id}]</span><br>
+              ${m.text}
+            </div>
+            <div class="ans-badge-user">
+              <b>您的作答：</b><br>${userDisplay}
+            </div>
+            <div class="ans-badge-correct">
+              <b>正確答案：</b><br>${correctDisplay}
+            </div>
+            <div class="explanation-box">
+              <b>💡 題解與原因剖析：</b><br>
+              ${m.exp || '請參考 HPE6-A86 原廠標準觀念與除錯手冊。'}
+            </div>
+          `;
+          wrongListContainer.appendChild(div);
+        });
+      }
+    }
+
+    let app;
+    window.addEventListener('DOMContentLoaded', () => { app = new ExamEngine(); });
+  </script>
+
+<script id="iphone-visibility-timer">
+(function () {
+  document.addEventListener("visibilitychange", function () {
+    if (document.visibilityState !== "visible") return;
+    try {
+      if (typeof exam !== "undefined" && exam && typeof exam.endTime === "number") {
+        exam.timeLeft = Math.max(0, Math.ceil((exam.endTime - Date.now()) / 1000));
+        if (typeof exam.updateTimer === "function") exam.updateTimer();
+        if (exam.timeLeft <= 0 && typeof exam.submitExam === "function") exam.submitExam();
+      }
+    } catch (e) {}
+  });
+})();
+</script>
+
+</body>
+</html>
